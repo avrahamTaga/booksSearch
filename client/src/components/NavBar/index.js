@@ -6,6 +6,11 @@ export const NavBar = () => {
     <nav className={style.navigation}>
       <ul className={style.linksContainer}>
         <li>
+          <Link className={style.link} to="/home">
+            Home
+          </Link>
+        </li>
+        <li>
           <Link className={style.link} to="/search">
             Search Books
           </Link>
