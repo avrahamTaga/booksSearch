@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import * as style from "./BooksSearch.module.scss";
+import uuid from "react-uuid";
 import { getBookCoverByOLID } from "../../BooksApi/index";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -11,11 +12,13 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ProgressBar from "../../components/ProgressBar";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { BooksContext } from "../../contexts/BooksContext";
 import { CollectiosnContext } from "../../contexts/CollectionsContext";
-import uuid from "react-uuid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,16 +30,22 @@ const useStyles = makeStyles((theme) => ({
 
 export const BooksSearch = () => {
   const classes = useStyles();
-  const { booksList, searchBook, flag, changeHandler } = useContext(
-    BooksContext
-  );
 
-  const { collections, addBooksToExistingCollection } = useContext(
+  const {
+    booksList,
+    searchBook,
+    flag,
+    changeSearchTermNameHandler,
+  } = useContext(BooksContext);
+
+  const { collections, collectionName, addBookToCollection } = useContext(
     CollectiosnContext
   );
+
   return (
     <Container>
       <Grid className={classes.root}>
+        <p>currently Collections: {collections.length}</p>
         <TextField
           id="outlined-basic"
           label="Search"
@@ -44,7 +53,7 @@ export const BooksSearch = () => {
           size="small"
           type="search"
           required
-          onChange={changeHandler}
+          onChange={changeSearchTermNameHandler}
         />
         <Button
           variant="contained"
@@ -60,10 +69,46 @@ export const BooksSearch = () => {
         {flag ? (
           <ProgressBar />
         ) : (
-          booksList.map((book, index) => {
+          booksList.map((book) => {
             return (
               <Grid key={uuid()} item xs={12} sm={6} md={4} lg={3}>
                 <Card className={style.cardActionArea}>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography className={classes.heading}>
+                        Collections Names
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {collections.length ? (
+                        collections.map((collection) => (
+                          <Button
+                            key={uuid()}
+                            onClick={() => {
+                              addBookToCollection(
+                                collection.books,
+                                uuid(),
+                                book.title_suggest,
+                                book.first_publish_year
+                              );
+                            }}
+                            color="primary"
+                          >
+                            {collection.collectionName}
+                          </Button>
+                        ))
+                      ) : (
+                        <p>
+                          Go To Collections Tab And Create Your First Collection
+                        </p>
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
+
                   <CardContent>
                     <Typography color="textSecondary" gutterBottom>
                       {book.title_suggest}
@@ -82,25 +127,6 @@ export const BooksSearch = () => {
                       }
                     />
                   </CardActionArea>
-                  <ButtonGroup className={classes.root}>
-                    <Button
-                      onClick={() => {
-                        addBooksToExistingCollection(
-                          collections[0].toRead,
-                          index,
-                          book.title_suggest,
-                          book.first_publish_year,
-                          book.cover_edition_key
-                            ? getBookCoverByOLID(book.cover_edition_key)
-                            : "https://unmpress.com/sites/default/files/default_images/no_image_book.jpg"
-                        );
-                      }}
-                      variant="contained"
-                      color="primary"
-                    >
-                      to read
-                    </Button>
-                  </ButtonGroup>
                 </Card>
               </Grid>
             );

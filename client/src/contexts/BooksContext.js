@@ -4,11 +4,12 @@ import { searchBooks } from "../BooksApi/index";
 export const BooksContext = createContext();
 
 const BooksContextProvide = (props) => {
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [booksList, setBooksList] = useState([]);
   const [flag, setFlag] = useState(false);
 
-  const changeHandler = (e) => {
+  const changeSearchTermNameHandler = (e) => {
     setSearchTerm(e.target.value);
   };
 
@@ -22,19 +23,25 @@ const BooksContextProvide = (props) => {
     }
     try {
       const books = await searchBooks(searchTerm);
-      setBooksList(books.docs);
-      setFlag(false);
+      if (books.docs.length) {
+        setBooksList(books.docs);
+        setFlag(false);
+      } else {
+        setFlag(false);
+        return alert("Not Search Result");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <BooksContext.Provider
       value={{
         booksList,
         searchBook,
         flag,
-        changeHandler,
+        changeSearchTermNameHandler,
       }}
     >
       {props.children}

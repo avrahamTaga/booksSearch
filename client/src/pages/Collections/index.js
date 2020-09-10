@@ -2,16 +2,21 @@ import React, { useContext } from "react";
 import * as style from "./Collections.module.scss";
 import { makeStyles } from "@material-ui/core/styles";
 import { CollectiosnContext } from "../../contexts/CollectionsContext";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import uuid from "react-uuid";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,45 +28,72 @@ const useStyles = makeStyles((theme) => ({
 
 export const Collections = () => {
   const classes = useStyles();
-  const { collections, collectionName } = useContext(CollectiosnContext);
+
+  const {
+    collections,
+    collectionName,
+    changeCollectionNameHandler,
+    createCollectionHandler,
+    deleteCollectionHandler,
+  } = useContext(CollectiosnContext);
+
   return (
     <Container>
-      <section>
-        <h1>Books Collections</h1>
-      </section>
-      <Grid
-        spacing={3}
-        container
-        direction="row"
-      >
-        {collections[0].toRead.map((book, index) => {
-          return (
-            <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
-              <Card className={style.cardActionArea}>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    {book.name}
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    {book.year}
-                  </Typography>
-                </CardContent>
-                <CardActionArea>
-                  <CardMedia component="img" image={book.img} />
-                </CardActionArea>
-                <ButtonGroup className={classes.root}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                </ButtonGroup>
-              </Card>
-            </Grid>
-          );
-        })}
+      <Grid className={classes.root}>
+        <p>currently Collections: {collections.length}</p>
+        <TextField
+          onChange={changeCollectionNameHandler}
+          id="standard-basic"
+          label="Collection Name"
+          variant="outlined"
+          size="small"
+          type="text"
+          required
+        />
+        <Button
+          onClick={() => {
+            createCollectionHandler(collectionName, uuid());
+          }}
+          variant="contained"
+          size="medium"
+          color="primary"
+        >
+          Create Collection
+        </Button>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Collection Name</TableCell>
+                <TableCell align="right">Id</TableCell>
+                <TableCell align="right">Edit</TableCell>
+                <TableCell align="right">Books</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {collections.map((collection) => (
+                <TableRow key={uuid()}>
+                  <TableCell component="th" scope="row">
+                    {collection.collectionName}
+                  </TableCell>
+                  <TableCell align="right">{collection.id}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => deleteCollectionHandler(collection.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton>
+                      <EditOutlinedIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="right">{collection.books.length}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Grid>
     </Container>
   );

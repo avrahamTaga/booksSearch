@@ -3,31 +3,48 @@ import React, { createContext, useState } from "react";
 export const CollectiosnContext = createContext();
 
 const CollectiosnContextProvide = (props) => {
-  const [collections, setCollections] = useState([{ toRead: [] }]);
+  const [collections, setCollections] = useState([]);
   const [collectionName, setCollectionName] = useState("");
-  const tempCollections = [...collections];
 
-  const addBooksToExistingCollection = (array, id, name, year, img) => {
-    for (let index = 0; index < array.length; index++) {
-      const element = array[index];
-      if (element.id === id) {
-          console.log("Feild");
-        return;
-      }
+  const changeCollectionNameHandler = (e) => {
+    setCollectionName(e.target.value);
+  };
+
+  const createCollectionHandler = (collectionName, id) => {
+    if (collectionName === "") {
+      alert("Please Enter A valid Collection Name");
+      return;
     }
-    tempCollections[0].toRead.push({
+    const newCollection = {
+      collectionName,
+      books: [],
       id,
-      name,
-      year,
-      img,
-    });
+    };
+    setCollections([...collections, newCollection]);
+  };
+
+  const deleteCollectionHandler = (id) => {
+    let tempCollections = collections.filter(
+      (collection) => collection.id !== id
+    );
     setCollections(tempCollections);
-    console.log(tempCollections[0].toRead);
+  };
+
+  const addBookToCollection = (array, id, name, year) => {
+    array.push({ id, name, year });
+    console.log(array);
   };
 
   return (
     <CollectiosnContext.Provider
-      value={{ collections, addBooksToExistingCollection }}
+      value={{
+        collections,
+        collectionName,
+        changeCollectionNameHandler,
+        createCollectionHandler,
+        deleteCollectionHandler,
+        addBookToCollection,
+      }}
     >
       {props.children}
     </CollectiosnContext.Provider>
