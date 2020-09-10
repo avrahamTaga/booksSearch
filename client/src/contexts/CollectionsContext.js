@@ -24,15 +24,27 @@ const CollectiosnContextProvide = (props) => {
   };
 
   const deleteCollectionHandler = (id) => {
-    let tempCollections = collections.filter(
+    const tempCollections = collections.filter(
       (collection) => collection.id !== id
     );
     setCollections(tempCollections);
   };
 
-  const addBookToCollection = (array, id, name, year) => {
-    array.push({ id, name, year });
-    console.log(array);
+  const addBookToCollectionHandler = (array, id, name, year, img) => {
+    array.push({ id, name, year, img });
+  };
+
+  const deleteBookFromCollectionHandker = (name, id) => {
+    const tempCollections = [...collections];
+    const collectionsIndex = tempCollections.findIndex(
+      (item) => item.collectionName === name
+    );
+    const newCollections = { ...tempCollections[collectionsIndex] };
+    const tempBooks = [...newCollections.books];
+    const newBooks = tempBooks.filter((element) => element.id !== id);
+    newCollections.books = newBooks;
+    tempCollections[collectionsIndex] = newCollections;
+    setCollections(tempCollections);
   };
 
   return (
@@ -43,7 +55,8 @@ const CollectiosnContextProvide = (props) => {
         changeCollectionNameHandler,
         createCollectionHandler,
         deleteCollectionHandler,
-        addBookToCollection,
+        addBookToCollectionHandler,
+        deleteBookFromCollectionHandker,
       }}
     >
       {props.children}

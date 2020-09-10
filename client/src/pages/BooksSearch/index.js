@@ -23,7 +23,7 @@ import { CollectiosnContext } from "../../contexts/CollectionsContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(2),
+      margin: theme.spacing(0.5),
     },
   },
 }));
@@ -38,14 +38,14 @@ export const BooksSearch = () => {
     changeSearchTermNameHandler,
   } = useContext(BooksContext);
 
-  const { collections, collectionName, addBookToCollection } = useContext(
+  const { collections, addBookToCollectionHandler } = useContext(
     CollectiosnContext
   );
 
   return (
     <Container>
       <Grid className={classes.root}>
-        <p>currently Collections: {collections.length}</p>
+        <p>Currently Collections: {collections.length}</p>
         <TextField
           id="outlined-basic"
           label="Search"
@@ -61,7 +61,7 @@ export const BooksSearch = () => {
           color="primary"
           onClick={searchBook}
         >
-          Search
+          Search Book
         </Button>
       </Grid>
       <br />
@@ -89,11 +89,14 @@ export const BooksSearch = () => {
                           <Button
                             key={uuid()}
                             onClick={() => {
-                              addBookToCollection(
+                              addBookToCollectionHandler(
                                 collection.books,
                                 uuid(),
                                 book.title_suggest,
-                                book.first_publish_year
+                                book.first_publish_year,
+                                book.cover_edition_key
+                                  ? getBookCoverByOLID(book.cover_edition_key)
+                                  : "https://unmpress.com/sites/default/files/default_images/no_image_book.jpg"
                               );
                             }}
                             color="primary"

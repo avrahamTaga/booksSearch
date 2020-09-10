@@ -17,11 +17,16 @@ import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(2),
+      margin: theme.spacing(0.5),
     },
   },
 }));
@@ -35,12 +40,13 @@ export const Collections = () => {
     changeCollectionNameHandler,
     createCollectionHandler,
     deleteCollectionHandler,
+    deleteBookFromCollectionHandker,
   } = useContext(CollectiosnContext);
 
   return (
     <Container>
       <Grid className={classes.root}>
-        <p>currently Collections: {collections.length}</p>
+        <p>Currently Collections: {collections.length}</p>
         <TextField
           onChange={changeCollectionNameHandler}
           id="standard-basic"
@@ -66,17 +72,63 @@ export const Collections = () => {
               <TableRow>
                 <TableCell>Collection Name</TableCell>
                 <TableCell align="right">Id</TableCell>
-                <TableCell align="right">Edit</TableCell>
                 <TableCell align="right">Books</TableCell>
+                <TableCell align="right">Edit Books</TableCell>
+                <TableCell align="right">Edit Collection</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {collections.map((collection) => (
+              {collections.map((collection, index) => (
                 <TableRow key={uuid()}>
                   <TableCell component="th" scope="row">
                     {collection.collectionName}
                   </TableCell>
                   <TableCell align="right">{collection.id}</TableCell>
+                  <TableCell align="right">{collection.books.length}</TableCell>
+
+                  <TableCell align="right">
+                    <Grid className={classes.root} container direction="row">
+                      {collection.books.map((book, index) => {
+                        return (
+                          <Grid
+                            key={uuid()}
+                            item
+                            xs={12}
+                            sm={6}
+                            md={4}
+                            lg={2}
+                            container
+                          >
+                            <Card className={style.cardActionArea}>
+                              <CardContent>
+                                <Typography color="textSecondary" gutterBottom>
+                                  {book.name}
+                                </Typography>
+                                <Typography variant="body2" component="p">
+                                  {book.first_publish_year}
+                                </Typography>
+                              </CardContent>
+                              <CardActionArea>
+                                <CardMedia component="img" image={book.img} />
+                              </CardActionArea>
+                              <IconButton
+                                onClick={() =>
+                                  deleteBookFromCollectionHandker(
+                                    collection.collectionName,
+                                    book.id
+                                  )
+                                }
+                                aria-label="delete"
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </TableCell>
+
                   <TableCell align="right">
                     <IconButton
                       aria-label="delete"
@@ -88,7 +140,6 @@ export const Collections = () => {
                       <EditOutlinedIcon />
                     </IconButton>
                   </TableCell>
-                  <TableCell align="right">{collection.books.length}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
