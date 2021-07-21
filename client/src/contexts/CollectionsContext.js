@@ -2,25 +2,37 @@ import React, { createContext, useState } from "react";
 
 export const CollectiosnContext = createContext();
 
-const CollectiosnContextProvide = (props) => {
+export const CollectiosnContextProvide = (props) => {
   const [collections, setCollections] = useState([]);
   const [collectionName, setCollectionName] = useState("");
+  const [newCollectionName, setNewCollectionName] = useState("");
 
   const changeCollectionNameHandler = (e) => {
     setCollectionName(e.target.value);
   };
 
+  const changeCollectionNewNamaHandler = (e) => {
+    setNewCollectionName(e.target.value);
+  };
+
   const createCollectionHandler = (collectionName, id) => {
-    if (collectionName === "") {
+    if (collectionName.trim() === "") {
       alert("Please Enter A valid Collection Name");
       return;
     }
-    const newCollection = {
-      collectionName,
-      books: [],
-      id,
-    };
-    setCollections([...collections, newCollection]);
+    const findIfCollectionExistAlredy = collections.findIndex(
+      (collection) => collection.collectionName === collectionName
+    );
+    if (findIfCollectionExistAlredy === -1) {
+      const newCollection = {
+        collectionName,
+        books: [],
+        id,
+      };
+      setCollections([...collections, newCollection]);
+    } else {
+      alert("This Collection Alredy Exist, Please Choose Another Name");
+    }
   };
 
   const deleteCollectionHandler = (id) => {
@@ -30,19 +42,31 @@ const CollectiosnContextProvide = (props) => {
     setCollections(tempCollections);
   };
 
-  const addBookToCollectionHandler = (array, id, name, year, img) => {
-    array.push({ id, name, year, img });
+  // ***
+  const addBookToCollectionHandler = (books, id, name, year, img) => {
+    books.push({ id, name, year, img });
   };
 
-  const deleteBookFromCollectionHandker = (name, id) => {
+  const deleteBookFromCollectionHandler = (name, id) => {
     const tempCollections = [...collections];
     const collectionsIndex = tempCollections.findIndex(
-      (item) => item.collectionName === name
+      (collection) => collection.collectionName === name
+    );
+    const newCollection = { ...tempCollections[collectionsIndex] };
+    const tempBooks = [...newCollection.books];
+    const filterBooks = tempBooks.filter((element) => element.id !== id);
+    newCollection.books = filterBooks;
+    tempCollections[collectionsIndex] = newCollection;
+    setCollections(tempCollections);
+  };
+
+  const renameCollectionNameHandler = (name, newCollectionName) => {
+    const tempCollections = [...collections];
+    const collectionsIndex = tempCollections.findIndex(
+      (collection) => collection.collectionName === name
     );
     const newCollections = { ...tempCollections[collectionsIndex] };
-    const tempBooks = [...newCollections.books];
-    const newBooks = tempBooks.filter((element) => element.id !== id);
-    newCollections.books = newBooks;
+    newCollections.collectionName = newCollectionName;
     tempCollections[collectionsIndex] = newCollections;
     setCollections(tempCollections);
   };
@@ -56,12 +80,13 @@ const CollectiosnContextProvide = (props) => {
         createCollectionHandler,
         deleteCollectionHandler,
         addBookToCollectionHandler,
-        deleteBookFromCollectionHandker,
+        deleteBookFromCollectionHandler,
+        renameCollectionNameHandler,
+        changeCollectionNewNamaHandler,
+        newCollectionName,
       }}
     >
       {props.children}
     </CollectiosnContext.Provider>
   );
 };
-
-export default CollectiosnContextProvide;

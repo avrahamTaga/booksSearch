@@ -1,8 +1,8 @@
 const getApiSearchUrl = (searchTerm) =>
-  `http://openlibrary.org/search.json?q=${searchTerm}`;
+  `https://openlibrary.org/search.json?q=${searchTerm}`;
 
 export const getBookCoverByOLID = (olid) =>
-  `http://covers.openlibrary.org/b/olid/${olid}-M.jpg`;
+  `https://covers.openlibrary.org/b/olid/${olid}-M.jpg`;
 
 export const searchBooks = (searchTerm = "") => {
   return fetch(getApiSearchUrl(searchTerm))

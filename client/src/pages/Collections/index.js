@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import uuid from "react-uuid";
 import * as style from "./Collections.module.scss";
 import { makeStyles } from "@material-ui/core/styles";
 import { CollectiosnContext } from "../../contexts/CollectionsContext";
@@ -6,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import uuid from "react-uuid";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -26,7 +26,7 @@ import Typography from "@material-ui/core/Typography";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(0.5),
+      margin: theme.spacing(2),
     },
   },
 }));
@@ -40,13 +40,16 @@ export const Collections = () => {
     changeCollectionNameHandler,
     createCollectionHandler,
     deleteCollectionHandler,
-    deleteBookFromCollectionHandker,
+    deleteBookFromCollectionHandler,
+    renameCollectionNameHandler,
+    changeCollectionNewNamaHandler,
+    newCollectionName,
   } = useContext(CollectiosnContext);
 
   return (
     <Container>
+      <p>Currently Collections: {collections.length}</p>
       <Grid className={classes.root}>
-        <p>Currently Collections: {collections.length}</p>
         <TextField
           onChange={changeCollectionNameHandler}
           id="standard-basic"
@@ -67,28 +70,37 @@ export const Collections = () => {
           Create Collection
         </Button>
         <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="simple table">
+          <Table aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Collection Name</TableCell>
                 <TableCell align="right">Id</TableCell>
                 <TableCell align="right">Books</TableCell>
-                <TableCell align="right">Edit Books</TableCell>
-                <TableCell align="right">Edit Collection</TableCell>
+                <TableCell align="right">Edit/Delete Books</TableCell>
+                <TableCell align="right">Delete Collection</TableCell>
+                <TableCell align="right">
+                  <TextField
+                    onChange={changeCollectionNewNamaHandler}
+                    label="Collection Rename"
+                    variant="outlined"
+                    size="small"
+                    type="text"
+                    required
+                  />
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {collections.map((collection, index) => (
+              {collections.map((collection) => (
                 <TableRow key={uuid()}>
                   <TableCell component="th" scope="row">
                     {collection.collectionName}
                   </TableCell>
                   <TableCell align="right">{collection.id}</TableCell>
                   <TableCell align="right">{collection.books.length}</TableCell>
-
                   <TableCell align="right">
                     <Grid className={classes.root} container direction="row">
-                      {collection.books.map((book, index) => {
+                      {collection.books.map((book) => {
                         return (
                           <Grid
                             key={uuid()}
@@ -113,7 +125,7 @@ export const Collections = () => {
                               </CardActionArea>
                               <IconButton
                                 onClick={() =>
-                                  deleteBookFromCollectionHandker(
+                                  deleteBookFromCollectionHandler(
                                     collection.collectionName,
                                     book.id
                                   )
@@ -136,7 +148,16 @@ export const Collections = () => {
                     >
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton>
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() =>
+                        renameCollectionNameHandler(
+                          collection.collectionName,
+                          newCollectionName
+                        )
+                      }
+                    >
                       <EditOutlinedIcon />
                     </IconButton>
                   </TableCell>

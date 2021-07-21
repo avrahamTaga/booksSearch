@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
-import * as style from "./BooksSearch.module.scss";
 import uuid from "react-uuid";
 import { getBookCoverByOLID } from "../../BooksApi/index";
+import { BooksContext } from "../../contexts/BooksContext";
+import { CollectiosnContext } from "../../contexts/CollectionsContext";
 import { makeStyles } from "@material-ui/core/styles";
+import { ProgressBar } from "../../components/ProgressBar";
+import * as style from "./BooksSearch.module.scss";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -12,18 +15,15 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import ProgressBar from "../../components/ProgressBar";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { BooksContext } from "../../contexts/BooksContext";
-import { CollectiosnContext } from "../../contexts/CollectionsContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(0.5),
+      margin: theme.spacing(2),
     },
   },
 }));
@@ -32,7 +32,7 @@ export const BooksSearch = () => {
   const classes = useStyles();
 
   const {
-    booksList,
+    booksListSearchResults,
     searchBook,
     flag,
     changeSearchTermNameHandler,
@@ -64,12 +64,11 @@ export const BooksSearch = () => {
           Search Book
         </Button>
       </Grid>
-      <br />
       <Grid spacing={2} container direction="row">
         {flag ? (
           <ProgressBar />
         ) : (
-          booksList.map((book) => {
+          booksListSearchResults.map((book) => {
             return (
               <Grid key={uuid()} item xs={12} sm={6} md={4} lg={3}>
                 <Card className={style.cardActionArea}>
@@ -92,7 +91,7 @@ export const BooksSearch = () => {
                               addBookToCollectionHandler(
                                 collection.books,
                                 uuid(),
-                                book.title_suggest,
+                                book.title,
                                 book.first_publish_year,
                                 book.cover_edition_key
                                   ? getBookCoverByOLID(book.cover_edition_key)
@@ -111,10 +110,9 @@ export const BooksSearch = () => {
                       )}
                     </AccordionDetails>
                   </Accordion>
-
                   <CardContent>
                     <Typography color="textSecondary" gutterBottom>
-                      {book.title_suggest}
+                      {book.title}
                     </Typography>
                     <Typography variant="body2" component="p">
                       {book.first_publish_year}

@@ -9,5 +9,3 @@ export const ProgressBar = () => {
     </Grid>
   );
 };
-
-export default ProgressBar;
